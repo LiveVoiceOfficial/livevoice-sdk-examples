@@ -41,9 +41,7 @@ class MainActivity : ComponentActivity() {
         val onlyHideBranding = "uFlkcGkUJEcb7jK6qFcdygreFRTXVh" //hides branding, no customization
         val noClaims = "HD4cQklUOQKOBWimG54j2kRnxFklDL" //branding shown, no customization allowed!
 
-        initializeLiveVoice(
-            foregroundServiceConfig = ForegroundServiceConfig.enabledWithDefaultMessage
-        )
+        initializeLiveVoice(foregroundServiceConfig = ForegroundServiceConfig.enabledWithDefaultMessage)
 
         lifecycleScope.launch {
             /** Await the completion of this function to know exactly when the sdk is available */

@@ -8,11 +8,11 @@ PODS:
   - hermes-engine (0.78.1):
     - hermes-engine/Pre-built (= 0.78.1)
   - hermes-engine/Pre-built (0.78.1)
-  - livevoice-sdk-react-native (1.0.0):
+  - livevoice-sdk-react-native (1.0.2):
     - DoubleConversion
     - glog
     - hermes-engine
-    - LiveVoiceSDK (~> 1.0.0)
+    - LiveVoiceSDK (~> 1.0.1)
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
@@ -30,9 +30,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - LiveVoiceRTC (135.0.0)
-  - LiveVoiceSDK (1.0.0):
-    - LiveVoiceRTC (= 135.0.0)
+  - LiveVoiceRTC (136.0.0)
+  - LiveVoiceSDK (1.0.1):
+    - LiveVoiceRTC (= 136.0.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1775,9 +1775,9 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: f493b0a600aed5dc06532141603688a30a5b2f61
-  livevoice-sdk-react-native: f0b2d0b5c7bcd9879871b10eb03832fc93c1d0ed
-  LiveVoiceRTC: ed22ce185fb1bcd87f299b99114500121455a26b
-  LiveVoiceSDK: 98f057276e7a622d34793142beb377dab19c3a2f
+  livevoice-sdk-react-native: 36ffbf9fd9a3f698809d8130d3733388469cfffa
+  LiveVoiceRTC: 7214b0e0865e71f4bd7315d8b3a5ee2c782cc74d
+  LiveVoiceSDK: d95bf358d9f0fc67dd94122c16bfa04b59f3b184
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: 082fbc90409015eac1366795a0b90f8b5cb28efe
   RCTRequired: ca966f4da75b62ce3ea8c538d82cb5ecbb06f12a

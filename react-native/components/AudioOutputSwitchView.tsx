@@ -1,3 +1,4 @@
+import { getCurrentAudioState, getCurrentUiState, onAudioOutputChanged, setLiveVoiceUseSpeaker } from 'livevoice-sdk-react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -17,8 +18,16 @@ export const AudioOutputSwitchView: React.FC<AudioOutputSwitchProps> = ({
   isDarkMode,
   onPress,
 }) => {
-  const [isSpeaker, setIsSpeaker] = useState(false);
-  const animation = useRef(new Animated.Value(0)).current;
+  const [isSpeaker, setIsSpeaker] = useState<Boolean>((() => (getCurrentAudioState())))
+  const animation = useRef(new Animated.Value(isSpeaker ? 1 : 0)).current;
+
+  useEffect(
+    () => {
+      onAudioOutputChanged((value: boolean) => {
+        console.log('State changed: ' + value);
+        setIsSpeaker(value);
+      });
+    }, []);
 
   useEffect(() => {
     Animated.timing(animation, {
@@ -28,13 +37,6 @@ export const AudioOutputSwitchView: React.FC<AudioOutputSwitchProps> = ({
       useNativeDriver: false,
     }).start();
   }, [isSpeaker]);
-
-  const toggleSwitch = () => {
-    setIsSpeaker(!isSpeaker);
-    if (onPress) {
-      onPress();
-    }
-  };
 
   const togglePosition = animation.interpolate({
     inputRange: [0, 1],
@@ -46,7 +48,7 @@ export const AudioOutputSwitchView: React.FC<AudioOutputSwitchProps> = ({
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      onPress={toggleSwitch}
+      onPress={() => setLiveVoiceUseSpeaker(!isSpeaker)}
       style={[
         styles.container,
         isDarkMode
@@ -55,8 +57,8 @@ export const AudioOutputSwitchView: React.FC<AudioOutputSwitchProps> = ({
       ]}
     >
       <View style={styles.iconContainer}>
-      <Text>🎧</Text>
-      <Text>🔊</Text>
+        <Text>🎧</Text>
+        <Text>🔊</Text>
       </View>
 
       <Animated.View

@@ -19,7 +19,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "io.livevoice.sample.rn"
+        applicationId = "io.livevoice.sample"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -58,7 +58,7 @@ android {
 
 dependencies {
     //noinspection UseTomlInstead
-    implementation("io.livevoice.sdk:android:1.0.0")
+    implementation("io.livevoice.sdk:android:1.0.1")
 
     //for animation in custom sample button
     implementation(libs.lottie.compose)
@@ -83,7 +83,7 @@ dependencies {
 //plugins {
 //    id 'com.android.application'
 //    id 'org.jetbrains.kotlin.android'
-//    id 'org.jetbrains.kotlin.plugin.serialization' version '2.0.0'
+//    id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.20'
 //    id 'kotlin-parcelize' // Needed or app won't compile due to SDK issue
 //    id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0'
 //    id 'idea'
@@ -145,7 +145,7 @@ dependencies {
 //    // For animation in custom sample button
 //    implementation libs.lottie.compose
 //
-//    implementation 'io.livevoice.sdk:android:1.0.0'
+//    implementation 'io.livevoice.sdk:android:1.0.1'
 //
 //    // Version definitions for all Compose libraries
 //    implementation platform(libs.androidx.compose.bom)

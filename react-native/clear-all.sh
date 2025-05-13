@@ -25,6 +25,6 @@ yarn install
 # Navigate to example/ios and run pod install
 echo "📲 Installing CocoaPods in example/ios..."
 cd ios
-pod install
+pod install --repo-update
 
 echo "✅ Done with clear-all!"

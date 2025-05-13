@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/LiveVoiceOfficial/swift-livevoice-sdk",
       "state" : {
-        "branch" : "main",
-        "revision" : "86a54505246f90bfa0c948d7d04ac052e9445bcc"
+        "revision" : "8b10aa0884ef877bba6f06c2ba71f276fd797b00",
+        "version" : "1.0.1"
       }
     }
   ],
