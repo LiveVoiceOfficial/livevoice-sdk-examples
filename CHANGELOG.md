@@ -24,6 +24,12 @@ Platforms: [iOS](#ios) | [Android](#android) | [React Native](#react-native)
 
 ## React Native
 
+### 1.0.3 - May 14, 2025
+
+Based on iOS v1.0.1, Android v1.0.1
+
+- Return cleanup function from event emitters
+
 ### 1.0.2 - May 13, 2025
 
 Based on iOS v1.0.1, Android v1.0.1
