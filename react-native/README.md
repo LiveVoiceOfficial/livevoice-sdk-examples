@@ -35,7 +35,7 @@ Both Android and iOS need configuration to support running audio in the backgrou
 
 To allow your app to continue playing audio in the background, you need to add a background mode to your app's capabilities.
 
-Click the project in Xcode's project navigator and select your target. In the `Signing and Capabilities` tab, add the `Background Modes` Capability (if it isn't already present) and check the `Voice over IP` box. This will add the proper key to your app's Info.plist file.
+Click the project in Xcode's project navigator and select your target. In the `Signing and Capabilities` tab, add the `Background Modes` Capability (if it isn't already present) and check the `Audio, AirPlay, and Picture in Picture` box. This will add the proper key to your app's Info.plist file.
 
 ### Android
 
