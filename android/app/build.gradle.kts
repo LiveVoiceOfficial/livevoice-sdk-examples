@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
-    id("kotlin-parcelize") //needed or app won't compile due to SDK issue
     alias(libs.plugins.compose.compiler)
     idea
 }
@@ -90,7 +89,6 @@ dependencies {
 //    id 'com.android.application'
 //    id 'org.jetbrains.kotlin.android'
 //    id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.20'
-//    id 'kotlin-parcelize' // Needed or app won't compile due to SDK issue
 //    id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0'
 //    id 'idea'
 //}

@@ -27,15 +27,7 @@ dependencyResolutionManagement {
 ```
 
 You can then include the dependency declaration in your app's `build.gradle.kts` file.
-The `kotlin-parcelize` plugin also needs to be added manually at the moment (this requirement will
-be removed in the future).
-
 ```kotlin
-// build.gradle.kts
-plugins {
-    id("kotlin-parcelize")
-}
-
 implementation("io.livevoice.sdk:android:X.X.X")
 ```
 
