@@ -1,8 +1,11 @@
 package io.livevoice.sdk_testapp
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,13 +15,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,19 +38,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.livevoice.sdk.android.publicApi.core.LiveVoice
-import io.livevoice.sdk.android.publicApi.core.model.SdkSubtitleLanguage
-import io.livevoice.sdk.android.publicApi.core.model.SdkSubtitleState
-import io.livevoice.sdk.android.publicApi.core.model.SdkSubtitleState.Disabled
-import io.livevoice.sdk.android.publicApi.core.model.SdkSubtitleState.Enabled
-import io.livevoice.sdk.android.publicApi.core.model.SdkSubtitleState.Specific
+import io.livevoice.sdk.android.publicApi.core.model.SdkUiState
+import io.livevoice.sdk.android.publicApi.core.model.subtitle.AvailableSubtitle
+import io.livevoice.sdk.android.publicApi.core.model.subtitle.SdkSubtitleState
+import io.livevoice.sdk.android.publicApi.core.model.subtitle.SdkSubtitleState.Disabled
+import io.livevoice.sdk.android.publicApi.core.model.subtitle.SdkSubtitleState.Enabled
 import io.livevoice.sdk.android.publicApi.views.LiveVoiceView
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @Composable
 fun DefaultDesignScreen(modifier: Modifier = Modifier) {
@@ -57,15 +61,18 @@ fun DefaultDesignScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SampleText("This is the default LiveVoice View")
+            SampleText("This is the default Livevoice View")
             LiveVoiceView()
             SampleSpacer()
 
             SampleText("It is also possible to filter channels")
-            LiveVoiceView(filter = { it.name == "German" })
+            LiveVoiceView(
+                modifier = Modifier.heightIn(min = 200.dp),
+                filter = { it.name == "German" }
+            )
             SampleSpacer()
 
             SampleText("And the OutputSwitch is Optional as well")
@@ -73,8 +80,11 @@ fun DefaultDesignScreen(modifier: Modifier = Modifier) {
             SampleSpacer()
         }
 
-        val subtitleState by LiveVoice.subtitleState.collectAsState(Disabled(mapOf()))
-        if (subtitleState.availableSubtitles.isNotEmpty()) {
+        val uiState by LiveVoice.uiState.collectAsState()
+        val subtitleState by LiveVoice.subtitleState.collectAsState()
+        val availableSubtitles by LiveVoice.availableSubtitles.collectAsState()
+
+        if (availableSubtitles.isNotEmpty()) {
             SampleText("Your event has the following Subtitles configured")
             Column(
                 modifier = Modifier
@@ -84,13 +94,28 @@ fun DefaultDesignScreen(modifier: Modifier = Modifier) {
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(12.dp),
             ) {
-                for (item in subtitleState.availableSubtitles) {
-                    SampleText(
-                        text = "Channel: ${item.key}: [${item.value.joinToString { """"$it"""" }}]",
-                    )
+
+                val grouped = availableSubtitles.groupBy { it.parentChannelId ?: it.channelId }
+                for (group in grouped) {
+                    val channelsOrNull = (uiState as? SdkUiState.Ready)?.channels
+                    val parentChannelname = channelsOrNull?.find { it.id == group.key }?.name
+                    val rootChannelName = parentChannelname?.let { "Channel: $it" }
+                        ?: "Source channel hidden"
+
+                    SampleText(rootChannelName, style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold))
+
+                    for (subtitleOption in group.value) {
+                        val text = when (subtitleOption) {
+                            is AvailableSubtitle.Transcript -> "Original Transcript"
+                            is AvailableSubtitle.Translated -> subtitleOption.name
+                        }
+                        SampleText(text = "\t $text")
+                    }
                 }
             }
-            SubtitleSampleDisplay(subtitleState, scrollState)
+
+            SubtitleSampleDisplay(subtitleState, availableSubtitles, scrollState)
+
         } else {
             SampleText(
                 modifier = Modifier.padding(12.dp),
@@ -104,14 +129,24 @@ fun DefaultDesignScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun ColumnScope.SubtitleSampleDisplay(
     subtitleState: SdkSubtitleState,
+    availableSubtitles: Set<AvailableSubtitle>,
     scrollState: ScrollState,
 ) {
     val enabled = subtitleState.isEnabled
     val scope = rememberCoroutineScope()
 
-    var languageTag: String? by remember { mutableStateOf(null) }
-    var channelId: Long? by remember { mutableStateOf(null) }
-    var isInitialLaunch by remember { mutableStateOf(true) }
+    //"null" means Automatic (Play subtitles for whatever channel's audio is being played
+    var chosenSubtitle: AvailableSubtitle? by remember { mutableStateOf(null) }
+    LaunchedEffect(subtitleState) {
+        when (subtitleState) {
+            is SdkSubtitleState.Specific  -> {
+                val correspondingSubtitle = availableSubtitles.find { it.channelId == subtitleState.channelId }
+                chosenSubtitle = correspondingSubtitle
+            }
+            is SdkSubtitleState.Automatic -> chosenSubtitle = null
+            Disabled                      -> {} // do nothing
+        }
+    }
 
     Spacer(modifier = Modifier.weight(1f))
     Column(
@@ -127,43 +162,30 @@ private fun ColumnScope.SubtitleSampleDisplay(
             .background(MaterialTheme.colorScheme.surface)
             .padding(12.dp)
     ) {
-        LaunchedEffect(languageTag, channelId) {
-            if (isInitialLaunch) {
-                isInitialLaunch = false
-                return@LaunchedEffect
-            }
-            //restart the subtitles if the chosen language changed
-            LiveVoice.startSubtitles(channelId, languageTag.toSdkSubtitleLanguage())
-            delay(500)
-            scrollState.animateScrollBy(1000f)
-        }
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
                 shape = RoundedCornerShape(12.dp),
-                onClick = {
-                    when (subtitleState) {
-                        is Specific -> LiveVoice.stopSubtitles()
-                        is Disabled -> {
-                            val subtitleLanguage = languageTag.toSdkSubtitleLanguage()
-
-                            LiveVoice.startSubtitles(channelId, subtitleLanguage)
+                onClick = remember(chosenSubtitle, subtitleState) {
+                    {
+                        when (subtitleState) {
+                            is Disabled -> {
+                                LiveVoice.startSubtitles(chosenSubtitle?.channelId)
+                            }
+                            else        -> {
+                                LiveVoice.stopSubtitles()
+                            }
                         }
-
-                        is SdkSubtitleState.Automatic,
-                            -> LiveVoice.stopSubtitles()
+                        scope.launch { scrollState.animateScrollBy(1000f) }
                     }
-                    scope.launch {
-                        scrollState.animateScrollBy(1000f)
-                    }
-                }
+                }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)
             ) {
                 SampleText(
                     if (subtitleState is Enabled) "Disable subtitles" else "Enable subtitles",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -174,43 +196,18 @@ private fun ColumnScope.SubtitleSampleDisplay(
                 .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            val channels: List<DropdownOption<Long?>> = subtitleState.availableSubtitles.keys.map {
-                DropdownOption(
-                    displayValue = it.toString(),
-                    clickValue = it
-                )
-            }
-            val autoChannelOption = DropdownOption<Long?>("auto", null)
-            val combined: List<DropdownOption<Long?>> =
-                listOf(autoChannelOption, *channels.toTypedArray())
 
             SampleDropdownMenu(
-                elements = combined,
-                selected = channelId,
-                buttonPrefix = "ChannelId",
-                nullableOptionTitle = "Auto",
-                onSelect = { channelId = it })
-
-            val sdkSubtitleConfig: Set<String?> =
-                subtitleState.availableSubtitles[channelId] ?: emptySet()
-
-            val subtitleOptions: List<DropdownOption<String?>> = sdkSubtitleConfig
-                .map {
-                    if (it == null) {
-                        DropdownOption("Transcript", null)
-                    } else
-                        DropdownOption(
-                            displayValue = Locale.forLanguageTag(it).displayName,
-                            clickValue = it
-                        )
+                elements = listOf(null) + availableSubtitles,
+                selected = chosenSubtitle,
+                onSelect = {
+                    chosenSubtitle = it
+                    LiveVoice.startSubtitles(chosenSubtitle?.channelId)
+                    scope.launch {
+                        scrollState.animateScrollBy(1000f)
+                    }
                 }
-
-            SampleDropdownMenu(
-                elements = subtitleOptions,
-                selected = languageTag,
-                buttonPrefix = "Language",
-                nullableOptionTitle = "Transcript",
-                onSelect = { languageTag = it })
+            )
         }
 
         if (enabled)
@@ -230,9 +227,12 @@ private fun ColumnScope.SubtitleSampleDisplay(
          *
          * can work well.
          */
-        Column {
+        Column(
+            modifier = Modifier
+                .scrollable(rememberScrollState(), orientation = Orientation.Vertical),
+        ) {
             if (subtitleState is Enabled) {
-                val fragments by subtitleState.fragments.collectAsStateWithLifecycle()
+                val fragments by subtitleState.fragments.collectAsState()
                 fragments.takeLast(3).forEach {
                     SampleText(it)
                 }
@@ -240,7 +240,3 @@ private fun ColumnScope.SubtitleSampleDisplay(
         }
     }
 }
-
-private fun String?.toSdkSubtitleLanguage() = this
-    ?.let { SdkSubtitleLanguage.Translated(it) }
-    ?: SdkSubtitleLanguage.Transcript

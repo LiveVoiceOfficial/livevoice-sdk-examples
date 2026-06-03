@@ -1,3 +1,6 @@
+source 'https://github.com/LiveVoiceOfficial/livevoice-sdk-specs.git'
+source 'https://cdn.cocoapods.org/'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -14,7 +17,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'ReactSdkSampleApp' do
+target 'ReactSDKSampleApp' do
   config = use_native_modules!
 
   use_react_native!(
@@ -31,5 +34,14 @@ target 'ReactSdkSampleApp' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Workaround for fmt consteval compilation error with C++20 and newer Apple Clang
+    installer.pods_project.targets.each do |target|
+      if target.name == 'fmt'
+        target.build_configurations.each do |build_config|
+          build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        end
+      end
+    end
   end
 end

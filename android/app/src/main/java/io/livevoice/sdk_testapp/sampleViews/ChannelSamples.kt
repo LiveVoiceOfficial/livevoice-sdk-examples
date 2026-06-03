@@ -4,14 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -42,16 +40,16 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.compose.rememberLottieDynamicProperties
 import com.airbnb.lottie.compose.rememberLottieDynamicProperty
-import io.livevoice.sdk.android.publicApi.core.model.LiveVoiceChannel
-import io.livevoice.sdk.android.publicApi.core.model.LiveVoicePlayingState.CONNECTING
-import io.livevoice.sdk.android.publicApi.core.model.LiveVoicePlayingState.PLAYING
-import io.livevoice.sdk.android.publicApi.core.model.LiveVoicePlayingState.STOPPED
-import io.livevoice.sdk.android.publicApi.core.model.LiveVoicePlayingState.STOPPING
+import io.livevoice.sdk.android.publicApi.core.model.channel.LiveVoiceChannel
+import io.livevoice.sdk.android.publicApi.core.model.channel.LiveVoicePlayingState.Connecting
+import io.livevoice.sdk.android.publicApi.core.model.channel.LiveVoicePlayingState.Playing
+import io.livevoice.sdk.android.publicApi.core.model.channel.LiveVoicePlayingState.Stopped
+import io.livevoice.sdk.android.publicApi.core.model.channel.LiveVoicePlayingState.Stopping
 import io.livevoice.sdk.android.publicApi.views.ChannelDisplay
 import io.livevoice.sdk_testapp.R
 
-val ChannelDisplaySample: ChannelDisplay = { channel, _, onChannelClick -> // draw icon
-    val isPlaying = channel.playingState == PLAYING
+val ChannelDisplaySample: ChannelDisplay = { channel, _, onAudioClick, onSubtitleClick -> // draw icon
+    val isPlaying = channel.playingState == Playing
     val borderTextColor = Color(0xFF084EFF)
 
     //filter to make lottie-animation in single, configurable color
@@ -67,13 +65,13 @@ val ChannelDisplaySample: ChannelDisplay = { channel, _, onChannelClick -> // dr
 
     val icon: @Composable () -> Unit = {
         when (channel.playingState) {
-            STOPPED -> Icon(
+            Stopped              -> Icon(
                 Icons.Outlined.PlayArrow,
                 contentDescription = null,
                 tint = borderTextColor
             )
 
-            STOPPING, CONNECTING -> {
+            Stopping, Connecting -> {
                 Box(Modifier.fillMaxSize()) {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -85,7 +83,7 @@ val ChannelDisplaySample: ChannelDisplay = { channel, _, onChannelClick -> // dr
                 }
             }
 
-            PLAYING -> {
+            Playing              -> {
                 val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.music))
                 val progress by animateLottieCompositionAsState(
                     composition, iterations = IterateForever
@@ -107,9 +105,7 @@ val ChannelDisplaySample: ChannelDisplay = { channel, _, onChannelClick -> // dr
             .padding(4.dp)
             .clip(RoundedCornerShape(50))
             .background(if (isPlaying) Color.White else Color.Transparent)
-            .clickable(enabled = channel.isOnline) {
-                onChannelClick(channel)
-            }
+            .clickable(enabled = channel.isOnline) { onAudioClick() }
             .run {
                 if (!isPlaying) border(1.5.dp, borderTextColor, RoundedCornerShape(50))
                 else this
@@ -117,25 +113,32 @@ val ChannelDisplaySample: ChannelDisplay = { channel, _, onChannelClick -> // dr
             .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val playButtonWidth = 100.dp
-
-        //As text/status is measured before play-button, the max width of the text has to be limited.
-        //Otherwise, the play-button might not have enough space to be drawn properly
-        BoxWithConstraints {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Row(
-                modifier = Modifier
-                    .widthIn(max = maxWidth - playButtonWidth)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    channel.name,
-                    modifier = Modifier
-                        .alignByBaseline()
-                        .padding(end = 16.dp, start = 8.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp,
-                    color = borderTextColor
-                )
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text(
+                        channel.name,
+                        modifier = Modifier
+                            .padding(end = 16.dp, start = 8.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                        color = borderTextColor
+                    )
+
+                    Text(
+                        channel.dependentChannels.joinToString(", ") { it.name },
+                        modifier = Modifier
+                            .padding(end = 16.dp, start = 8.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        color = borderTextColor
+                    )
+                }
 
                 if (channel.isAudioMuted)
                     Text(
@@ -148,35 +151,33 @@ val ChannelDisplaySample: ChannelDisplay = { channel, _, onChannelClick -> // dr
                         overflow = TextOverflow.Ellipsis
                     )
             }
-        }
-        Spacer(modifier = Modifier.weight(1f))
+            val buttonColor = when {
+                isPlaying        -> borderTextColor
+                channel.isOnline -> Color.White
+                else             -> Color.Transparent
+            }
 
-        val buttonColor = when {
-            isPlaying -> borderTextColor
-            channel.isOnline -> Color.White
-            else -> Color.Transparent
-        }
-
-        //Play button
-        Surface(
-            modifier = Modifier
-                .padding(8.dp)
-                .size(54.dp)
-                .clip(RoundedCornerShape(50))
-                .background(buttonColor)
-                .run {
-                    if (!isPlaying && !channel.isOnline) border(
-                        1.5.dp, borderTextColor, RoundedCornerShape(50)
-                    )
-                    else this
-                }
-                .run {
-                    if (!isPlaying) padding(8.dp)
-                    else this
-                },
-            color = buttonColor,
-        ) {
-            icon()
+            //Play button
+            Surface(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(54.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(buttonColor)
+                    .run {
+                        if (!isPlaying && !channel.isOnline) border(
+                            1.5.dp, borderTextColor, RoundedCornerShape(50)
+                        )
+                        else this
+                    }
+                    .run {
+                        if (!isPlaying) padding(8.dp)
+                        else this
+                    },
+                color = buttonColor,
+            ) {
+                icon()
+            }
         }
     }
 }
@@ -187,12 +188,16 @@ private fun SampleChannelDisplayPreview() {
     Box(modifier = Modifier.background(Color(0xFF283593))) {
         val channel = LiveVoiceChannel(
             0, "test",
-            playingState = STOPPED,
+            playingState = Stopped,
             isOnline = false,
             isAudioMuted = false,
-            isAiSpeaker = false
+            isAiSpeaker = false,
+            hasAudio = true,
+            hasSubtitles = true,
+            aiTranslationInfo = null,
+            dependentChannels = emptyList()
         )
-        ChannelDisplaySample(channel, false, {})
+        ChannelDisplaySample(channel, false, {}, {})
     }
 }
 
@@ -202,12 +207,16 @@ private fun LoadingChannelDisplayPreview() {
     Box(modifier = Modifier.background(Color(0xFF283593))) {
         val channel = LiveVoiceChannel(
             1, "test",
-            playingState = CONNECTING,
+            playingState = Connecting,
             isOnline = false,
             isAudioMuted = false,
-            isAiSpeaker = false
+            isAiSpeaker = false,
+            hasAudio = true,
+            hasSubtitles = true,
+            aiTranslationInfo = null,
+            dependentChannels = emptyList()
         )
-        ChannelDisplaySample(channel, false, {})
+        ChannelDisplaySample(channel, false, {}, {})
     }
 }
 
@@ -217,12 +226,16 @@ private fun PlayingChannelDisplayPreview() {
     Box(modifier = Modifier.background(Color(0xFF283593))) {
         val channel = LiveVoiceChannel(
             1, "test",
-            playingState = PLAYING,
+            playingState = Playing,
             isOnline = false,
             isAudioMuted = false,
-            isAiSpeaker = false
+            isAiSpeaker = false,
+            hasAudio = true,
+            hasSubtitles = true,
+            aiTranslationInfo = null,
+            dependentChannels = emptyList()
         )
-        ChannelDisplaySample(channel, false, {})
+        ChannelDisplaySample(channel, false, {}, {})
     }
 }
 
@@ -232,11 +245,15 @@ private fun PlayingChannelMutedDisplayPreview() {
     Box(modifier = Modifier.background(Color(0xFF283593))) {
         val channel = LiveVoiceChannel(
             1, "test",
-            playingState = PLAYING,
+            playingState = Playing,
             isOnline = false,
             isAudioMuted = false,
-            isAiSpeaker = false
+            isAiSpeaker = false,
+            hasAudio = true,
+            hasSubtitles = true,
+            aiTranslationInfo = null,
+            dependentChannels = emptyList()
         )
-        ChannelDisplaySample(channel, false, {})
+        ChannelDisplaySample(channel, false, {}, {})
     }
 }

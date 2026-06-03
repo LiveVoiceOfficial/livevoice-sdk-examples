@@ -7,16 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		44030AF82FD0039D0034758A /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44D220A22C228D6E005A6998 /* LiveVoiceSDK */; };
+		44030AF92FD0039D0034758A /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44EF327E2D953074001BF756 /* LiveVoiceSDK */; };
+		44030AFA2FD0039D0034758A /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 444359C82F9FBDE10053D52A /* LiveVoiceSDK */; };
+		44030AFB2FD0039D0034758A /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44C54E392F9FDF7C008AD556 /* LiveVoiceSDK */; };
+		44030AFC2FD0039D0034758A /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44F0A9352FCF183900F764CB /* LiveVoiceSDK */; };
+		44030AFF2FD003BC0034758A /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44030AFE2FD003BC0034758A /* LiveVoiceSDK */; };
 		442B402C2A137C0E0005351F /* SDKSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442B402B2A137C0E0005351F /* SDKSampleApp.swift */; };
 		442B402E2A137C0E0005351F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442B402D2A137C0E0005351F /* ContentView.swift */; };
 		442B40302A137C100005351F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 442B402F2A137C100005351F /* Assets.xcassets */; };
 		442B40332A137C100005351F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 442B40322A137C100005351F /* Preview Assets.xcassets */; };
-		447E260C2DA7223F0056C1A9 /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 447E260B2DA7223F0056C1A9 /* LiveVoiceSDK */; };
 		44A417DD2CB5978900D1EC97 /* DefaultUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A417DA2CB5978900D1EC97 /* DefaultUI.swift */; };
 		44A417DE2CB5978900D1EC97 /* CustomUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A417DB2CB5978900D1EC97 /* CustomUI.swift */; };
 		44A417DF2CB5978900D1EC97 /* CustomUI2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A417DC2CB5978900D1EC97 /* CustomUI2.swift */; };
-		44D220A32C228D6E005A6998 /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44D220A22C228D6E005A6998 /* LiveVoiceSDK */; };
-		44EF327F2D953074001BF756 /* LiveVoiceSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 44EF327E2D953074001BF756 /* LiveVoiceSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,9 +53,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				44EF327F2D953074001BF756 /* LiveVoiceSDK in Frameworks */,
-				44D220A32C228D6E005A6998 /* LiveVoiceSDK in Frameworks */,
-				447E260C2DA7223F0056C1A9 /* LiveVoiceSDK in Frameworks */,
+				44030AFC2FD0039D0034758A /* LiveVoiceSDK in Frameworks */,
+				44030AFB2FD0039D0034758A /* LiveVoiceSDK in Frameworks */,
+				44030AFF2FD003BC0034758A /* LiveVoiceSDK in Frameworks */,
+				44030AFA2FD0039D0034758A /* LiveVoiceSDK in Frameworks */,
+				44030AF92FD0039D0034758A /* LiveVoiceSDK in Frameworks */,
+				44030AF82FD0039D0034758A /* LiveVoiceSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +133,10 @@
 			packageProductDependencies = (
 				44D220A22C228D6E005A6998 /* LiveVoiceSDK */,
 				44EF327E2D953074001BF756 /* LiveVoiceSDK */,
-				447E260B2DA7223F0056C1A9 /* LiveVoiceSDK */,
+				444359C82F9FBDE10053D52A /* LiveVoiceSDK */,
+				44C54E392F9FDF7C008AD556 /* LiveVoiceSDK */,
+				44F0A9352FCF183900F764CB /* LiveVoiceSDK */,
+				44030AFE2FD003BC0034758A /* LiveVoiceSDK */,
 			);
 			productName = SDKSampleApp;
 			productReference = 442B40282A137C0E0005351F /* SDKSampleApp.app */;
@@ -141,7 +150,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					442B40272A137C0E0005351F = {
 						CreatedOnToolsVersion = 14.3;
@@ -158,7 +167,7 @@
 			);
 			mainGroup = 442B401F2A137C0E0005351F;
 			packageReferences = (
-				447E260A2DA7223F0056C1A9 /* XCRemoteSwiftPackageReference "swift-livevoice-sdk" */,
+				44030AFD2FD003BC0034758A /* XCRemoteSwiftPackageReference "livevoice-sdk-swift" */,
 			);
 			productRefGroup = 442B40292A137C0E0005351F /* Products */;
 			projectDirPath = "";
@@ -254,6 +263,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -311,6 +321,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -415,20 +426,28 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		447E260A2DA7223F0056C1A9 /* XCRemoteSwiftPackageReference "swift-livevoice-sdk" */ = {
+		44030AFD2FD003BC0034758A /* XCRemoteSwiftPackageReference "livevoice-sdk-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/LiveVoiceOfficial/swift-livevoice-sdk";
+			repositoryURL = "https://github.com/LiveVoiceOfficial/livevoice-sdk-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		447E260B2DA7223F0056C1A9 /* LiveVoiceSDK */ = {
+		44030AFE2FD003BC0034758A /* LiveVoiceSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 447E260A2DA7223F0056C1A9 /* XCRemoteSwiftPackageReference "swift-livevoice-sdk" */;
+			package = 44030AFD2FD003BC0034758A /* XCRemoteSwiftPackageReference "livevoice-sdk-swift" */;
+			productName = LiveVoiceSDK;
+		};
+		444359C82F9FBDE10053D52A /* LiveVoiceSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LiveVoiceSDK;
+		};
+		44C54E392F9FDF7C008AD556 /* LiveVoiceSDK */ = {
+			isa = XCSwiftPackageProductDependency;
 			productName = LiveVoiceSDK;
 		};
 		44D220A22C228D6E005A6998 /* LiveVoiceSDK */ = {
@@ -436,6 +455,10 @@
 			productName = LiveVoiceSDK;
 		};
 		44EF327E2D953074001BF756 /* LiveVoiceSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LiveVoiceSDK;
+		};
+		44F0A9352FCF183900F764CB /* LiveVoiceSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LiveVoiceSDK;
 		};

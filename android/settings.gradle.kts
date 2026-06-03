@@ -25,5 +25,13 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    /**
+     * This enables us to automatically download necessary toolchains for different jdk versions, if
+     * they are not already be installed on the system.
+     */
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 rootProject.name = "LiveVoice SDK Android Sample"
 include(":app")

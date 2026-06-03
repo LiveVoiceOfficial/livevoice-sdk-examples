@@ -1,13 +1,13 @@
 {
-  "originHash" : "e5f467b5e551d848ad936ecac116271428259001c38521c5ad738f0939acb875",
+  "originHash" : "0152498c23e542e9e738e2140804ad947f199a7298ec7255fc424260f65c1631",
   "pins" : [
     {
-      "identity" : "swift-livevoice-sdk",
+      "identity" : "livevoice-sdk-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/LiveVoiceOfficial/swift-livevoice-sdk",
+      "location" : "https://github.com/LiveVoiceOfficial/livevoice-sdk-swift",
       "state" : {
-        "revision" : "8b10aa0884ef877bba6f06c2ba71f276fd797b00",
-        "version" : "1.0.1"
+        "revision" : "55f572e321d16d86ce93e9c9eb354ba125e8ea89",
+        "version" : "2.0.0"
       }
     }
   ],

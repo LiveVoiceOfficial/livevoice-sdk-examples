@@ -1,14 +1,12 @@
 # LiveVoice SDK Sample App - Android
 
-To launch the sample app, either open the directory in Android Studio, or use
-```shell
-yarn android
-```
-to launch the app from the command line.
+To launch the sample app, open the [android](../android) directory as a Project in Android Studio
+and use the `run` action in the top right.
 
 # Integrating the SDK into your Android app
 
-Specify the LiveVoice Android repository either in your root `build.gradle.kts` file or the project's `settings.gradle.kts` file.
+Specify the _LiveVoice Android repository_ either in your root `build.gradle.kts` file or the
+project's `settings.gradle.kts` file.
 
 ```kotlin
 // build.gradle.kts (root)
@@ -29,7 +27,8 @@ dependencyResolutionManagement {
 ```
 
 You can then include the dependency declaration in your app's `build.gradle.kts` file.
-The `kotlin-parcelize` plugin also needs to be added manually at the moment (this requirement will be removed in the future).
+The `kotlin-parcelize` plugin also needs to be added manually at the moment (this requirement will
+be removed in the future).
 
 ```kotlin
 // build.gradle.kts
@@ -48,7 +47,7 @@ The easiest way of doing this is inside an `Application` or `Activity` class:
 override fun onCreate() {
     super.onCreate()
 
-	initializeLiveVoice()
+    initializeLiveVoice()
 }
 ```
 
@@ -58,20 +57,21 @@ You can also manually pass the `applicationContext` and invoke the static functi
 LiveVoice.initializeLivevoice(applicationContext = application)
 ```
 
-To show the channels of your event, you can join the event using the `Livevoice.joinEvent(...)` method, and display the `LiveVoiceView()` composable.
+To show the channels of your event, you can join the event using the `Livevoice.joinEvent(...)`
+method, and display the `LiveVoiceView()` composable.
 
 ```kotlin
 @Composable
-fun App(){
-	LaunchedEffect(Unit){
-		Livevoice.joinEvent(
-			joinCode = "123456",
-			password =  null,
-			apiKey =  "s09WEG5y3caQ6R2PDaG4i8R1aTooTd"
-		)
-	}
+fun App() {
+    LaunchedEffect(Unit) {
+        Livevoice.joinEvent(
+            joinCode = "123456",
+            password = null,
+            apiKey = "s09WEG5y3caQ6R2PDaG4i8R1aTooTd"
+        )
+    }
 
-	LiveVoiceView()
+    LiveVoiceView()
 }
 ```
 
@@ -79,7 +79,8 @@ fun App(){
 
 ### Specify the size of views
 
-To ensure that e.g. the `LiveVoiceView` does not exceed a certain height, you can specify the max size by passing a `modifier` to the view.
+To ensure that e.g. the `LiveVoiceView` does not exceed a certain height, you can specify the max
+size by passing a `modifier` to the view.
 
 Make sure to also make it `scrollable` if you do that by using the `verticalScroll(..)` modifier.
 
@@ -93,14 +94,16 @@ LiveVoiceView(
 
 > [!TIP]  
 > Be aware that the height needed to render the views will vary with different screen sizes,
-> densities and the font-scale chosen by the user. Hardcoding values that fully display the 
+> densities and the font-scale chosen by the user. Hardcoding values that fully display the
 > event on one device might not be enough to render them on other devices
 
 ### Problems downloading sources
 
-The SDK includes a `android-X.X.X-sources.jar` file, which includes documentation and source-code for public-facing APIs of the LiveVoice SDK, available in your IDE.
+The SDK includes a `android-X.X.X-sources.jar` file, which includes documentation and source-code
+for public-facing APIs of the LiveVoice SDK, available in your IDE.
 
-While this _should_ automatically be downloaded on project sync, gradle sometimes doesn't resolve the source archive which leads to missing documentation/autocomplete.
+While this _should_ automatically be downloaded on project sync, gradle sometimes doesn't resolve
+the source archive which leads to missing documentation/autocomplete.
 
 When using IntelliJ/Android Studio, use and configure the `idea` plugin to almost always solve this.
 
@@ -112,8 +115,8 @@ plugins {
 
 idea {
     module {
-	    isDownloadSources = true
-	    isDownloadJavadoc = true
+        isDownloadSources = true
+        isDownloadJavadoc = true
     }
 }
 ```
@@ -123,41 +126,36 @@ Alternatively, `File > Invalidate caches > Invalidate and Restart` usually solve
 ### Background Audio Support
 
 As the Android OS limits resources for apps as soon as the screen is turned off or they are in the
-background, we support launching a [ForegroundService](https://developer.android.com/develop/background-work/services/fgs) whenever a channel is being played, which prevents the OS from cutting the audio of a playing channel.
+background, the SDK comes with built-in support for automatically launching
+a [ForegroundService](https://developer.android.com/develop/background-work/services/fgs) whenever a
+channel is being played, which prevents the OS from cutting the audio of the channel being played.
 
-Running this foreground-service requires showing a notification (with a configurable message) while a channel is being played, which will also re-open the app when clicked.
-
-Steps:
-
-1. Enable via optional parameter to `initializeLiveVoice(..)` function
-
-```kotlin
-initializeLiveVoice(
-	foregroundServiceConfig = ForegroundServiceConfig.enabledWithDefaultMessage
-)
-```
-
-2. Add the necessary permissions and register the service class
-
- ```xml
-<!--AndroidManifest.xml-->
-<manifest>
-    <!--  Mandatory, when using the service  -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-	<!--  Necessary for android SDK 34 and above.  -->
-    <uses-permission android:minSdkVersion="34"
-        android:name="android.permission.POST_NOTIFICATIONS" />
-
-
- <application>
-        <activity .../>
-        <service android:foregroundServiceType="mediaPlayback" android:name="io.livevoice.sdk.android.publicApi.service.LiveVoiceMediaService" />
-    </application>
-</manifest>
- ```
+This service will automatically be run while audio is being played and requires showing a
+notification for the whole duration, which will also re-open the app when clicked.
 
 > [!NOTE]  
-> For devices on Android API 34 and above, you need to explicitly specify the
-> "POST_NOTIFICATIONS" permission in your manifest, and ask for it at runtime, 
-> otherwise the notification will not be displayed!
+> As of version 2.0.0, The LiveVoice SDK comes with the necessary manifest entries for running the
+> foreground service, which will automatically be merged into your app's manifest during build.
+
+#### Integration into the app
+
+The manifest permissions include showing notifications, limited to Android SDK versions 34 and up.
+While the manifest already contains it, you will still have to ask for it at runtime.
+
+#### Disabling the service
+
+**This is not recommended**!
+
+It should only be done if your app already has a service process running in the background, in which
+case you can add the `android:foregroundServiceType="mediaPlayback` type to it.
+
+If you want to completely remove the manifest entries, you can do so by adding the following to your
+app's `AndroidManifest.xml`
+
+```
+<application>
+    <service 
+        android:name="io.livevoice.sdk.android.publicApi.service.LiveVoiceMediaService"
+        tools:node="remove" />
+</application>
+```

@@ -1,13 +1,15 @@
 # LiveVoice SDK Sample App - iOS
 
-You can either open the Xcode project and run the app from Xcode, or you can use
+You can use
+
 ```shell
 # you can optionally specify the simulator to use
-yarn ios --simulator "iPhone 16 Pro"
+yarn ios --simulator "iPhone 17 Pro"
 ```
-from the command line.
 
-> [!NOTE] 
+to launch the example app from the command line.
+
+> [!NOTE]
 > To run the app on your device, select your Development Team in the target settings under `Signing & Capabilities` in Xcode.
 
 # Integrating the SDK into your iOS app

@@ -5,9 +5,9 @@ struct DefaultUI: View {
     // Use the shared LiveVoice singleton to access the audio output
     @ObservedObject private var liveVoice: LiveVoice = .shared
     
-    @State private var availableLanguages: Set<String?> = []
+    @State private var availableSubtitles: [String?: [LiveVoice.AvailableSubtitle]] = [:]
     @State private var subtitles: String = ""
-    @State private var subtitleLanguage: String? = nil
+    @State private var pickedSubtitle: Int64? = nil
     
     var body: some View {
         VStack(spacing: 10) {
@@ -30,7 +30,11 @@ struct DefaultUI: View {
             }
             
             Section("Display only a single specific channel") {
-                LiveVoiceView { $0.id == 3308 }
+                LiveVoiceView {
+                    $0.id == 3308
+                    || ($0.aiTranslationInfo?.sourceID == 3308 && $0.hasAudio)
+                    && $0.dependentChannels.count(where: { $0.hasAudio }) > 0
+                }
             }
             
             Section("If there are no matching channels") {
@@ -44,23 +48,27 @@ struct DefaultUI: View {
                     if liveVoice.subtitles.isEnabled {
                         try await liveVoice.stopSubtitles()
                     } else {
-                        // Always just display the currently playing channel's subtitles
-                        try await liveVoice.startSubtitles(
-                            channelID: nil,
-                            languageOption: subtitleLanguage.map { .translated(language: $0) } ?? .transcript
-                        )
+                        try await liveVoice.startSubtitles(channelID: pickedSubtitle)
                     }
                 }
             }
-            Picker("Language", selection: $subtitleLanguage) {
-                // Include a `nil` value to allow for automatically using the base language of the picked channel
-                Text("Automatic").tag(Optional<String>.none)
+            Picker("Language", selection: $pickedSubtitle) {
+                // Include a `nil` value to allow for automatically picking the active channel
+                Text("Automatic").tag(Optional<Int64>.none)
                 // The combined list of available languages for simplicity
-                ForEach(availableLanguages.sorted(), id: \.self) { language in
-                    if let language {
-                        Text(Locale.current.localizedString(forLanguageCode: language) ?? language).tag(language)
+                ForEach(availableSubtitles.keys.sorted(by: { $0 ?? "" < $1 ?? "" }), id: \.self) { name in
+                    if let name {
+                        Section("Based on \(name)") {
+                            ForEach(availableSubtitles[name] ?? [], id: \.self) { subtitle in
+                                Text(subtitle.language != nil ? subtitle.name : "Original Transcript")
+                                    .tag(subtitle.id)
+                            }
+                        }
                     } else {
-                        Text("Original Transcript").tag("transcript")
+                        ForEach(availableSubtitles[nil] ?? [], id: \.self) { subtitle in
+                            Text(subtitle.language != nil ? subtitle.name : "Original Transcript \(subtitle.name)")
+                                .tag(subtitle.id)
+                        }
                     }
                 }
             }
@@ -68,24 +76,38 @@ struct DefaultUI: View {
         }
         .font(.subheadline.bold())
         // Whenever the selected language changes we kick off a request to start subtitles
-        .onChange(of: subtitleLanguage) { oldValue, newValue in
+        .onChange(of: pickedSubtitle) { oldValue, newValue in
             guard oldValue != newValue else { return }
             Task {
                 if liveVoice.subtitles.isEnabled {
                     // Always just display the currently playing channel's subtitles
-                    try await liveVoice.startSubtitles(
-                        channelID: nil,
-                        languageOption: newValue.map { .translated(language: $0) } ?? .transcript
-                    )
+                    try await liveVoice.startSubtitles(channelID: newValue)
                 }
             }
         }
         // Populate the list of available languages
-        //
-        // For simplicity, we don't care about some languages not being available in some channels
-        .onReceive(liveVoice.$availableSubtitles) { subs in
-            self.availableLanguages = subs.map { $0.value }.reduce(Set<String?>()) { $0.union($1) }
+        .onReceive(liveVoice.$availableSubtitles) { availableSubtitles in
+            var names: [Int64: String] = [:]
+            for a in availableSubtitles {
+                if names[a.id] ==  nil {
+                    names[a.id] = a.name
+                }
+            }
+            
+            var mapped: [String?: [LiveVoice.AvailableSubtitle]] = [:]
+            for a in availableSubtitles {
+                if let parent = a.parent, let parentName = names[parent] {
+                    mapped[parentName, default: []].append(a)
+                } else if let name = names[a.id], a.parent == nil {
+                    mapped[name, default: []].append(a)
+                } else {
+                    mapped[nil, default: []].append(a)
+                }
+            }
+            
+            self.availableSubtitles = mapped
         }
+        
         if let strings = liveVoice.subtitles.fragments {
             ScrollView {
                 // Since the fragments are not necessarily unique, we use their index in the array as identity

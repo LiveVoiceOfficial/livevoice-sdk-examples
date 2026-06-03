@@ -42,17 +42,29 @@ extension Color {
 struct CustomUI: View {
     var body: some View {
         Group {
-            LiveVoiceView { (state: LiveVoiceView.ViewState) in
+            LiveVoiceView { (state: LiveVoice.ViewState) in
                 switch state {
                 case .loading:
                     EmptyView()
                 case let .ready(channel: channel, isLast: _, onTap: onTap):
                     HStack {
-                        Text(channel.name)
-                            .font(.title.bold())
-                            .foregroundStyle(Color.lightBlue)
-                            .padding(.leading, 10)
-                        Spacer()
+                        VStack(alignment: .leading) {
+                            Text(channel.name)
+                                .font(.title.bold())
+                            if !channel.dependentChannels.isEmpty {
+                                // Every channel carries information about AI channels that have
+                                // this channel as input. Check their `hasSubtitles` or `hasAudio`
+                                // properties to learn what kind of translation they provide.
+                                let channelList = channel.dependentChannels
+                                    .map(\.name)
+                                    .formatted(.list(type: .and))
+                                Text(verbatim: "Other languages: \(channelList)")
+                                    .font(.caption)
+                            }
+                        }
+                        .foregroundStyle(Color.lightBlue)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 10)
                         Button {
                             onTap()
                         } label: {
@@ -90,7 +102,7 @@ struct CustomUI: View {
                     
                 case let .error(error, retry: retry):
                     HStack {
-                        Text("\(error)")
+                        Text(error.localizedDescription, bundle: .liveVoiceSDK)
                             .foregroundStyle(Color.lightBlue)
                             .padding(.leading, 10)
                     }

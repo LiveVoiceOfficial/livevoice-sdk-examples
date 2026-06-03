@@ -1,7 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
     id("kotlin-parcelize") //needed or app won't compile due to SDK issue
     alias(libs.plugins.compose.compiler)
     idea
@@ -16,14 +18,14 @@ idea {
 
 android {
     namespace = "io.livevoice.sdk_testapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.livevoice.sample"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "2.0.0"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -35,15 +37,18 @@ android {
             //there is no signing-config, so we use a minified/non-debuggable debug build
             // to emulate a release build
             isMinifyEnabled = true
-            isDebuggable = false
+            isShrinkResources = true
+            isDebuggable = true
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+        }
     }
     buildFeatures {
         compose = true
@@ -58,7 +63,7 @@ android {
 
 dependencies {
     //noinspection UseTomlInstead
-    implementation("io.livevoice.sdk:android:1.0.1")
+    implementation("io.livevoice.sdk:android:2.0.0-rc1")
 
     //for animation in custom sample button
     implementation(libs.lottie.compose)
@@ -66,6 +71,7 @@ dependencies {
     //version definitions for all compose libraries
     implementation(platform(libs.androidx.compose.bom))
 
+    implementation(libs.material.icons.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -98,7 +104,7 @@ dependencies {
 //
 //android {
 //    namespace 'io.livevoice.sdk_testapp'
-//    compileSdk 35
+//    compileSdk 36
 //
 //    defaultConfig {
 //        applicationId 'io.livevoice.sample.rn'

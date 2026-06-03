@@ -18,7 +18,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { ChannelView } from './ChannelView';
 import { ErrorView } from './ErrorView';
 import { ReconnectingView } from './ReconnectingView';
-import { AudioOutputSwitchView } from './AudioOutputSwitchView';
+import { AudioOutputSwitchView } from 'livevoice-sdk-react-native';
 
 export interface CustomLiveVoiceViewProps {
   isDarkMode?: boolean;

@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.livevoice.sdk.android.publicApi.core.model.subtitle.AvailableSubtitle
 
 @Composable
 fun SampleSpacer() {
@@ -47,29 +47,29 @@ fun SampleText(
     )
 }
 
-data class DropdownOption<T>(val displayValue: String, val clickValue: T)
-
 @Composable
-fun <T : Any?> SampleDropdownMenu(
-    buttonPrefix: String,
-    nullableOptionTitle: String,
-    elements: Collection<DropdownOption<T>>,
-    selected: T?,
-    onSelect: (T?) -> Unit,
+fun SampleDropdownMenu(
+    elements: Collection<AvailableSubtitle?>,
+    selected: AvailableSubtitle?,
+    onSelect: (AvailableSubtitle?) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    val automaticString = "Automatic"
+
     Box {
         Button(
-            border = BorderStroke(Dp.Hairline, Color.LightGray),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Gray
+                containerColor = MaterialTheme.colorScheme.background,
             ),
             onClick = { expanded = true }
         ) {
-            SampleText("$buttonPrefix:  ${selected?.toString() ?: nullableOptionTitle}")
+            SampleText(
+                text = "Chosen subtitle:  ${selected?.name ?: automaticString}",
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
 
         // Dropdown menu
@@ -79,9 +79,9 @@ fun <T : Any?> SampleDropdownMenu(
         ) {
             for (element in elements) {
                 DropdownMenuItem(
-                    text = { SampleText(element.displayValue) },
+                    text = { SampleText(element?.name ?: automaticString) },
                     onClick = {
-                        onSelect(element.clickValue)
+                        onSelect(element)
                         expanded = false
                     }
                 )

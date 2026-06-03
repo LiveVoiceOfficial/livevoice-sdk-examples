@@ -36,7 +36,7 @@ struct CustomUI2: View {
                 .foregroundStyle(.white)
                 .padding()
             ScrollView {
-                LiveVoiceView { (state: LiveVoiceView.ViewState) in
+                LiveVoiceView { (state: LiveVoice.ViewState) in
                     VStack {
                         switch state {
                         case .loading:
@@ -80,7 +80,7 @@ struct CustomUI2: View {
                                 Text("Reconnecting…")
                             }
                         case let .error(error, retry: retry):
-                            Text("\(error)")
+                            Text(error.localizedDescription, bundle: .liveVoiceSDK)
                             if let retry {
                                 Button("Retry") { Task { await retry() } }
                                 .buttonStyle(.bordered)

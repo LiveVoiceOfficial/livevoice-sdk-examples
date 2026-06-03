@@ -3,6 +3,8 @@ package io.livevoice.sdk_testapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -14,13 +16,17 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.lifecycleScope
 import io.livevoice.sdk.android.publicApi.core.LiveVoice
 import io.livevoice.sdk.android.publicApi.core.LiveVoice.initializeLiveVoice
@@ -31,6 +37,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         /**
          * These api-keys only work for the demo event 123456, they have different claims
@@ -54,25 +61,34 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             /**
-             * You can wrap the LiveVoiceView() in a MaterialTheme, to change it's look. primary,
-             * surface and background color are used to decide colors of elements.
+             * You can wrap the LiveVoiceView() in a MaterialTheme to change its look. Primary,
+             * surface, and background colors are used to decide the colors of elements.
              */
 
             val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
-            Scaffold(
-                bottomBar = { BottomBar(pagerState) }
-            ) { paddingValues ->
-                HorizontalPager(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxHeight(),
-                    state = pagerState,
-                    verticalAlignment = Alignment.Top
-                ) { page ->
-                    when (page) {
-                        0 -> DefaultDesignScreen()
-                        1 -> CustomDesignSample()
+            /**
+             * You can warp the LiveVoiceView in a MaterialTheme to configure the background color
+             */
+            MaterialTheme(
+                colorScheme = if (isSystemInDarkTheme())
+                    darkColorScheme(background = Color.Black)
+                else lightColorScheme(background = Color.White)
+            ) {
+                Scaffold(
+                    bottomBar = { BottomBar(pagerState) }
+                ) { paddingValues ->
+                    HorizontalPager(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxHeight(),
+                        state = pagerState,
+                        verticalAlignment = Alignment.Top
+                    ) { page ->
+                        when (page) {
+                            0 -> DefaultDesignScreen()
+                            1 -> CustomDesignSample()
+                        }
                     }
                 }
             }

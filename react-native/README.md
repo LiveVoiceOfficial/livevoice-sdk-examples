@@ -1,89 +1,61 @@
-# LiveVoiceSDK - React Native
+# Getting Started
 
-## Getting Started
+> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
-Add the npm package to your project:
+## Step 1: Start Metro
 
-Yarn:
+First, you will need to run **Metro**, the JavaScript build tool for React Native.
+
+To start the Metro dev server, run the following command from the root of your React Native project:
+
 ```sh
-yarn install livevoice-sdk-react-native
-```
-Npm:
-```sh
-npm add livevoice-sdk-react-native
-npm install
-```
+# Using npm
+npm start
 
-In your TypeScript code, call
-```typescript
-import {initialize, joinEvent, LiveVoiceView} from 'livevoice-sdk-react-native';
-
-initialize()
-joinEvent('123456', null, 's09WEG5y3caQ6R2PDaG4i8R1aTooTd');
-
-// Within the desired component place the view
-<View>
-  <LiveVoiceView>
-</View>
+# OR using Yarn
+yarn start
 ```
 
-## Background Audio Support
+## Step 2: Build and run your app
 
-Both Android and iOS need configuration to support running audio in the background.
-
-### iOS
-
-To allow your app to continue playing audio in the background, you need to add a background mode to your app's capabilities.
-
-Click the project in Xcode's project navigator and select your target. In the `Signing and Capabilities` tab, add the `Background Modes` Capability (if it isn't already present) and check the `Audio, AirPlay, and Picture in Picture` box. This will add the proper key to your app's Info.plist file.
+With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
 
 ### Android
 
-We provide builtin support for launching a [ForegroundService](https://developer.android.com/develop/background-work/services/fgs) whenever a channel is being played, which prevents the OS from cutting off the audio of a playing channel.
+```sh
+# Using npm
+npm run android
 
-Running this foreground-service requires showing a notification (with a configurable message) while a channel is being played, which will re-open the app when tapped.
-
-We highly recommend either enabling this, or implementing a similar solution on your own.
-
-Steps:
-
-1. Enable via optional parameter to `initialize(..)` function
-
-```typescript
-import {initialize, serviceEnabledWithDefaultMessage} from 'livevoice-sdk-react-native';
-
-// Use the default notification message
-initialize(serviceEnabledWithDefaultMessage);
-
-// Use a custom notification message
-initialize(serviceEnabledWithMessage("Channel %s is playing"));
+# OR using Yarn
+yarn android
 ```
 
-2. Add the necessary permissions and register the service class
+### iOS
 
- ```xml
-<!--AndroidManifest.xml-->
-<manifest>
-    <!--  Mandatory, when using the service  -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-	<!--  Necessary for android SDK 34 and above.  -->
-    <uses-permission android:minSdkVersion="34"
-        android:name="android.permission.POST_NOTIFICATIONS" />
+For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
 
+The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
 
- <application>
-        <activity .../>
-        <service android:foregroundServiceType="mediaPlayback" android:name="io.livevoice.sdk.android.publicApi.service.LiveVoiceMediaService" />
-    </application>
-</manifest>
- ```
+```sh
+bundle install
+```
 
-> [!NOTE]  
-> For devices on Android API 34 and above, you need to explicitly specify the
-> "POST_NOTIFICATIONS" permission in your manifest, and ask for it at runtime, 
-> otherwise the notification will not be displayed!
+Then, and every time you update your native dependencies, run:
 
-3. Ask for the notification runtime-permission on Android SDK 34 and above
+```sh
+bundle exec pod install
+```
 
-  Choose your preferred npm dependency to achieve this
+For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+
+```sh
+# Using npm
+npm run ios
+
+# OR using Yarn
+yarn ios
+```
+
+If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+
+This is one way to run your app — you can also build it directly from Android Studio or Xcode.

@@ -22,15 +22,14 @@ struct LiveVoiceSDKDemoApp: App {
 
 extension View {
     func initialized(joinCode: String, password: String? = nil, apiKey: String) -> some View {
-        self
-            .onAppear {
-                Task {
-                    await LiveVoice.shared.joinEvent(
-                        joinCode: joinCode,
-                        password: password,
-                        apiKey: apiKey
-                    )
-                }
+        onAppear {
+            Task {
+                await LiveVoice.shared.joinEvent(
+                    joinCode: joinCode,
+                    password: password,
+                    apiKey: apiKey
+                )
             }
+        }
     }
 }
