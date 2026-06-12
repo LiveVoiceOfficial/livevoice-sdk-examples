@@ -1,3 +1,10 @@
 {
-  "extends": "@react-native/typescript-config"
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    // The base config pulls in jest types; the sample ships no tests, so drop
+    // all global type packages to keep it free of testing/lint dependencies.
+    "types": []
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"]
 }

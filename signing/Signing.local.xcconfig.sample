@@ -1,0 +1,10 @@
+// LiveVoice sample — iOS device-signing override (template).
+//
+// To run a sample on a physical device, duplicate this file as `Signing.local.xcconfig`
+// (drop the `.sample` suffix) and set your Apple Developer team below:
+//
+//     cp Signing.local.xcconfig.sample Signing.local.xcconfig
+//
+// The copy is git-ignored, so your team ID is never committed. All three iOS samples
+// (native, React Native, Flutter) read it automatically. The simulator needs no signing.
+DEVELOPMENT_TEAM = YOURTEAMID

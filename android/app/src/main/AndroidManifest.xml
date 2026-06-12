@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- The SDK's background-audio foreground service posts a notification while a channel
+         plays; on Android 13+ this permission must also be requested at runtime. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -15,8 +18,9 @@
         android:theme="@style/Theme.SDKTestapp"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="io.livevoice.example.MainActivity"
             android:exported="true"
+            android:configChanges="uiMode|orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|density|fontScale|locale|layoutDirection"
             android:theme="@style/Theme.SDKTestapp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

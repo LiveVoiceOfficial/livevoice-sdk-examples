@@ -1,0 +1,40 @@
+PODS:
+  - Flutter (1.0.0)
+  - livevoice_sdk_flutter (2.0.0):
+    - Flutter
+    - LiveVoiceSDK (= 2.0.2)
+  - LiveVoiceRTC (140.0.0)
+  - LiveVoiceSDK (2.0.2):
+    - LiveVoiceRTC (= 140.0.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - livevoice_sdk_flutter (from `.symlinks/plugins/livevoice_sdk_flutter/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - LiveVoiceRTC
+    - LiveVoiceSDK
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  livevoice_sdk_flutter:
+    :path: ".symlinks/plugins/livevoice_sdk_flutter/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  livevoice_sdk_flutter: 2c72503288f178bffe6ba8ea51a1b9a9b3859d89
+  LiveVoiceRTC: 5037c2e01df30d60a656ba27e4449d6c56dbb6da
+  LiveVoiceSDK: fdddaec003211fb896df043550f2c4686db8da88
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+
+PODFILE CHECKSUM: 735e92b9c53f04d58cc5c168fcf17cec58799ec7
+
+COCOAPODS: 1.16.2

@@ -1,0 +1,3 @@
+# The team-specific override is git-ignored; the committed `.sample` template and the
+# shared Android keystore stay tracked.
+Signing.local.xcconfig

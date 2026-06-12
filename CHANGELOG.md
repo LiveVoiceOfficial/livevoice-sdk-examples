@@ -1,8 +1,12 @@
 # Changelog LiveVoice SDK
 
-Platforms: [iOS](#ios) | [Android](#android) | [React Native](#react-native)
+Platforms: [iOS](#ios) | [Android](#android) | [React Native](#react-native) | [Flutter](#flutter)
 
 ## iOS
+
+### 2.0.2 - June 26, 2026
+
+- Bugfixes
 
 ### 2.0.0 - June 3, 2026
 
@@ -19,6 +23,10 @@ Platforms: [iOS](#ios) | [Android](#android) | [React Native](#react-native)
 
 ## Android
 
+### 2.0.2 - June 26, 2026
+
+- Bugfixes
+
 ### 2.0.0 - June 3, 2026
 
 - Updated for LiveVoice 5.0 model changes and UI
@@ -33,6 +41,11 @@ Platforms: [iOS](#ios) | [Android](#android) | [React Native](#react-native)
 - Initial release
 
 ## React Native
+
+### 2.0.1 - June 27, 2026
+
+- Bugfixes
+- Harmonize API with other platforms
 
 ### 2.0.0 - June 3, 2026
 
@@ -54,5 +67,11 @@ Based on iOS v1.0.1, Android v1.0.1
 ### 1.0.1 - May 1, 2025
 
 Based on iOS v1.0.0, Android v1.0.0
+
+- Initial release
+
+## Flutter
+
+### 2.0.0 - June 27, 2026
 
 - Initial release

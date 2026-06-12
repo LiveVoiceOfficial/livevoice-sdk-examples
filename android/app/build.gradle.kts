@@ -1,28 +1,16 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
     alias(libs.plugins.compose.compiler)
-    idea
-}
-
-idea {
-    module {
-        isDownloadSources = true
-        isDownloadJavadoc = true
-    }
 }
 
 android {
-    namespace = "io.livevoice.sdk_testapp"
+    namespace = "io.livevoice.example"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "io.livevoice.sample"
+        applicationId = "io.livevoice.example"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "2.0.0"
 
@@ -31,23 +19,35 @@ android {
         }
     }
 
+    signingConfigs {
+        getByName("debug") {
+            // Shared keystore in signing/ (all examples-private Android samples sign with it) so
+            // local builds get a stable signature and stay updatable across machines. It is the
+            // well-known Android debug key — not secret, sample only; sign your own app with your
+            // own release key.
+            storeFile = rootProject.file("../signing/sample-debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         debug {
-            //there is no signing-config, so we use a minified/non-debuggable debug build
-            // to emulate a release build
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Keep debug builds fast while iterating on the sample app.
+            isMinifyEnabled = false
+            isShrinkResources = false
             isDebuggable = true
+        }
+        release {
+            // Standalone install build, signed with the shared debug keystore above (these samples
+            // are not published to Play). Not minified — avoids needing ProGuard/R8 rules.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-        }
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -61,105 +61,15 @@ android {
 }
 
 dependencies {
-    //noinspection UseTomlInstead
-    implementation("io.livevoice.sdk:android:2.0.0-rc1")
+    implementation("io.livevoice.sdk:android:2.0.2")
 
-    //for animation in custom sample button
-    implementation(libs.lottie.compose)
-
-    //version definitions for all compose libraries
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.material.icons.core)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    debugImplementation(libs.androidx.ui.tooling)
 }
-
-
-// You can rename the file to `build.gradle`, and use the commented-out code below
-// to see how to use groovy-based build files!
-//
-//plugins {
-//    id 'com.android.application'
-//    id 'org.jetbrains.kotlin.android'
-//    id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.20'
-//    id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0'
-//    id 'idea'
-//}
-//
-//idea {
-//    module {
-//        downloadSources = true
-//        downloadJavadoc = true
-//    }
-//}
-//
-//android {
-//    namespace 'io.livevoice.sdk_testapp'
-//    compileSdk 36
-//
-//    defaultConfig {
-//        applicationId 'io.livevoice.sample.rn'
-//        minSdk 26
-//        targetSdk 35
-//        versionCode 1
-//        versionName '1.0.0'
-//
-//        vectorDrawables {
-//            useSupportLibrary true
-//        }
-//    }
-//
-//    buildTypes {
-//        debug {
-//            // There is no signing-config, so we use a minified/non-debuggable debug build
-//            // to emulate a release build
-//            minifyEnabled true
-//            debuggable false
-//        }
-//    }
-//
-//    compileOptions {
-//        sourceCompatibility JavaVersion.VERSION_1_8
-//        targetCompatibility JavaVersion.VERSION_1_8
-//    }
-//
-//    kotlinOptions {
-//        jvmTarget = '1.8'
-//    }
-//
-//    buildFeatures {
-//        compose true
-//    }
-//
-//    packagingOptions {
-//        resources {
-//            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-//        }
-//    }
-//}
-//
-//dependencies {
-//    // For animation in custom sample button
-//    implementation libs.lottie.compose
-//
-//    implementation 'io.livevoice.sdk:android:1.0.1'
-//
-//    // Version definitions for all Compose libraries
-//    implementation platform(libs.androidx.compose.bom)
-//
-//    implementation libs.androidx.core.ktx
-//    implementation libs.androidx.lifecycle.runtime.ktx
-//    implementation libs.androidx.activity.compose
-//    implementation libs.androidx.ui
-//    implementation libs.androidx.ui.graphics
-//    implementation libs.androidx.ui.tooling.preview
-//    implementation libs.androidx.material3
-//    debugImplementation libs.androidx.ui.tooling
-//}

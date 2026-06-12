@@ -1,3 +1,11 @@
 /.obsidian
 /.DS_Store
 /.idea
+
+# iOS signing — machine-local Apple Developer team, never committed. The samples carry no team;
+# create your own gitignored Signing.local.xcconfig with `DEVELOPMENT_TEAM = <your team>` to sign.
+Signing.local.xcconfig
+
+# Lockfiles (yarn.lock / pubspec.lock / Podfile.lock) ARE committed so the samples pin release
+# versions and give reproducible builds. Don't commit one while a local dependency override
+# (e.g. `yarn link` / `pubspec_overrides.yaml`) is active — regenerate clean lockfiles first.

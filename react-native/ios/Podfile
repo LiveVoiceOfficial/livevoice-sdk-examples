@@ -1,5 +1,5 @@
-source 'https://github.com/LiveVoiceOfficial/livevoice-sdk-specs.git'
-source 'https://cdn.cocoapods.org/'
+lv_dev = File.expand_path('~/.cocoapods/livevoice-dev.rb')
+eval(File.read(lv_dev), binding) if File.exist?(lv_dev)
 
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
@@ -8,14 +8,24 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+# min_ios_version_supported is React Native's own floor (0.86 → iOS 15.1), and RN's post_install
+# (updateOSDeploymentTarget) bumps every pod to at least that. So this app is 15.1, not 15.0 like
+# the native/Flutter samples — it's RN-imposed, not a choice, and can't be lowered without forking
+# RN's CocoaPods scripts. Harmless in practice: the lowest devices we target (iOS 15.x) are ≥ 15.1.
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+# Link pods as static *frameworks* rather than the default static *libraries*.
+#
+# @react-navigation/native-stack pulls in react-native-screens, which is a Swift
+# pod. Swift can only `import` the React Native pods it depends on (such as
+# React-RCTImage) when those pods expose a Clang module map. Static libraries do
+# not generate module maps, so the build fails with "does not define modules".
+# Static frameworks give every pod a module map, which resolves the issue while
+# keeping static linking. Set USE_FRAMEWORKS to override the linkage if needed.
+linkage = ENV['USE_FRAMEWORKS'] || 'static'
+Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+use_frameworks! :linkage => linkage.to_sym
 
 target 'ReactSDKSampleApp' do
   config = use_native_modules!
@@ -27,7 +37,6 @@ target 'ReactSDKSampleApp' do
   )
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
@@ -35,11 +44,18 @@ target 'ReactSDKSampleApp' do
       # :ccache_enabled => true
     )
 
-    # Workaround for fmt consteval compilation error with C++20 and newer Apple Clang
+    # Some transitive pods (e.g. RNCAsyncStorage's resource bundle) hardcode an iOS 13.0
+    # deployment target, which Xcode 27 rejects (supported range is 15.0+). react_native_post_install
+    # bumps the main pod targets but not resource-bundle targets. Raise any pod target that sits
+    # *below* the project floor — never lower one that's already higher, and leave
+    # inherited/unset values alone.
+    floor = Gem::Version.new(min_ios_version_supported)
     installer.pods_project.targets.each do |target|
-      if target.name == 'fmt'
-        target.build_configurations.each do |build_config|
-          build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      target.build_configurations.each do |config|
+        current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+        next unless current.is_a?(String) && current =~ /\A\d+(\.\d+)*\z/
+        if Gem::Version.new(current) < floor
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
         end
       end
     end

@@ -1,0 +1,8 @@
+// Public sample — no development team is committed here. To sign on a device, create a
+// gitignored signing/Signing.local.xcconfig with `DEVELOPMENT_TEAM = <your team>`.
+// Slot: this file is the *project-level* base configuration. The app target's
+// base-config slot is owned by CocoaPods (Pods-ReactSDKSampleApp.*.xcconfig),
+// which sets no DEVELOPMENT_TEAM, so this project-level value is inherited.
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic
+#include? "../../signing/Signing.local.xcconfig"

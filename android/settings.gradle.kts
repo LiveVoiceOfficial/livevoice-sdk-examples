@@ -10,7 +10,6 @@ pluginManagement {
             }
         }
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
         gradlePluginPortal()
     }
 }
@@ -20,7 +19,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://sdks.livevoice.io/android") }
     }
 }
@@ -33,5 +31,5 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-rootProject.name = "LiveVoice SDK Android Sample"
+rootProject.name = "SDKSampleApp"
 include(":app")

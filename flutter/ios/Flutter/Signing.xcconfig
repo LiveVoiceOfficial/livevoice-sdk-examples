@@ -1,0 +1,7 @@
+// Public sample — no development team is committed here. To sign on a device, create a
+// gitignored signing/Signing.local.xcconfig with `DEVELOPMENT_TEAM = <your team>`.
+// Slot: #include?-ed from Flutter/Debug.xcconfig & Release.xcconfig (the Runner
+// target's base configurations), so it layers on top of the Flutter/Pods configs.
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic
+#include? "../../../signing/Signing.local.xcconfig"
