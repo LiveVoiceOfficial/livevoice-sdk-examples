@@ -1,47 +1,59 @@
-//===----------------------------------------------------------------------===//
+// LiveVoice SDK sample app
 //
-// This source file is part of the LiveVoice SDK project
+// `initialize` sets the SDK up once, before any other SDK call and before the
+// first LiveVoiceView: the audio focus, whether the playing channel shows in
+// the iOS system media controls, and the Android foreground service that keeps
+// audio playing in the background. As on iOS, these are not properties to set
+// later: only another `initialize` changes them, and only while no event is
+// joined (see Lock screen and audio sharing).
 //
-// Copyright (c) LiveVoice GmbH
-// Licensed under the MIT license
-//
-// See LICENSE for license information
-//
-// SPDX-License-Identifier: MIT
-//
-//===----------------------------------------------------------------------===//
+// A hot restart runs `main` again while the native SDK keeps its event and
+// configuration. `initialize` with the same values succeeds and reads the
+// SDK's current state; with other values it fails with `invalidArgument`
+// while an event is joined. The demo therefore saves the values it last
+// initialized with.
 
 import 'package:flutter/material.dart';
 import 'package:livevoice_sdk_flutter/livevoice_sdk_flutter.dart';
 
-import 'screens/home_screen.dart';
-import 'shared/demo_session.dart';
+import 'demo/demo_session.dart';
+import 'demo/demo_theme.dart';
+import 'home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize the SDK once. On Android this also configures the foreground
-  // service used while audio is playing; it is ignored on iOS.
-  await initialize(
-    androidServiceConfig: const LiveVoiceServiceEnabled(
-      message: 'Channel %s is playing!',
-    ),
-  );
-
-  runApp(const MyApp());
+  final audio = await DemoAudioSettings.load();
+  try {
+    await initialize(
+      audioFocus: audio.audioFocus,
+      // iOS only; on Android the foreground service's notification is the
+      // system media control.
+      showsSystemMediaControls: audio.showsSystemMediaControls,
+      // Android only: keeps playing in the background, with a media
+      // notification. Enabled by default.
+      androidServiceConfig: const LiveVoiceForegroundServiceConfigEnabled(),
+    );
+  } on LiveVoiceException catch (error) {
+    runApp(_InitializeFailedApp(error: error));
+    return;
+  }
+  runApp(SampleApp(audioSettings: audio));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class SampleApp extends StatefulWidget {
+  const SampleApp({super.key, required this.audioSettings});
+
+  final DemoAudioSettings audioSettings;
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<SampleApp> createState() => _SampleAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  // Owns the selected API key preset for the lifetime of the app and joins the
-  // demo event on launch.
-  final DemoSession _session = DemoSession()..restoreCustomCredentials();
+class _SampleAppState extends State<SampleApp> {
+  // Joins the event picked in the toolbar; created after `initialize`.
+  late final DemoSession _session = DemoSession(
+    audioSettings: widget.audioSettings,
+  );
 
   @override
   void dispose() {
@@ -50,17 +62,43 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return DemoSessionScope(
-      session: _session,
-      child: MaterialApp(
-        title: 'LiveVoice SDK',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(brightness: Brightness.light),
-        darkTheme: ThemeData(brightness: Brightness.dark),
-        themeMode: ThemeMode.system,
-        home: const HomeScreen(),
+  Widget build(BuildContext context) => DemoSessionScope(
+    session: _session,
+    child: MaterialApp(
+      title: 'LiveVoice SDK',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.light,
+        colorSchemeSeed: DemoTheme.light.accent,
       ),
-    );
-  }
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorSchemeSeed: DemoTheme.darkTheme.accent,
+      ),
+      home: const HomeScreen(),
+    ),
+  );
+}
+
+/// What shows when `initialize` fails, for example with `unsupportedSdk`
+/// when the native SDK isn't the version this package needs.
+class _InitializeFailedApp extends StatelessWidget {
+  const _InitializeFailedApp({required this.error});
+
+  final LiveVoiceException error;
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            'Unable to initialize LiveVoice: ${error.code.value}',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ),
+  );
 }

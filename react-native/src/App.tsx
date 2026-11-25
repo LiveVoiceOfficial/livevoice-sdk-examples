@@ -10,7 +10,6 @@
  */
 
 import React from "react";
-import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   DarkTheme,
@@ -18,58 +17,29 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {
-  initialize,
-  serviceEnabledWithMessage,
-} from "livevoice-sdk-react-native";
-import { DemoSessionProvider } from "./shared/DemoSession";
-import { DemoApiKeyMenu } from "./shared/ui";
-import { useDemoTheme } from "./theme";
-import { HomeScreen } from "./screens/HomeScreen";
-import { DefaultParticipantScreen } from "./screens/DefaultParticipantScreen";
-import { FilteredChannelsScreen } from "./screens/FilteredChannelsScreen";
-import { AudioOutputScreen } from "./screens/AudioOutputScreen";
-import { SubtitleOnlyScreen } from "./screens/SubtitleOnlyScreen";
-import { BrandingScreen } from "./screens/BrandingScreen";
-import { CustomChannelCellScreen } from "./screens/CustomChannelCellScreen";
-import { LocalizationScreen } from "./screens/LocalizationScreen";
-import { allDemoItems, type DemoRoute } from "./screens/demos";
+import { DemoApiKeyMenu, DemoEventPickerModal } from "./demo/DemoEventPicker";
+import type { DemoStackParamList } from "./demo/DemoNavigation";
+import { DemoSessionProvider } from "./demo/DemoSession";
+import { useDemoTheme } from "./demo/DemoTheme";
+import { demoSections, HomeScreen } from "./screens/HomeScreen";
 
-const DEMO_SCREENS: Record<DemoRoute, React.FC> = {
-  DefaultParticipant: DefaultParticipantScreen,
-  FilteredChannels: FilteredChannelsScreen,
-  AudioOutput: AudioOutputScreen,
-  SubtitleOnly: SubtitleOnlyScreen,
-  Branding: BrandingScreen,
-  CustomChannel: CustomChannelCellScreen,
-  Localization: LocalizationScreen,
-};
-
-// Initialize the SDK once. On Android this also configures the foreground
-// service used while audio is playing.
-initialize(serviceEnabledWithMessage("Channel %s is playing!"));
-
-export type RootStackParamList = { Home: undefined } & {
-  [K in DemoRoute]: undefined;
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<DemoStackParamList>();
 
 export default function App() {
-  const scheme = useColorScheme();
   const theme = useDemoTheme();
-
   return (
     <SafeAreaProvider>
+      {/* Initializes the SDK and joins the event picked in the header. */}
       <DemoSessionProvider>
-        <NavigationContainer
-          theme={scheme === "dark" ? DarkTheme : DefaultTheme}
-        >
+        <NavigationContainer theme={theme.dark ? DarkTheme : DefaultTheme}>
           <Stack.Navigator
             screenOptions={{
+              // Each screen shows its title in its content, as on iOS.
+              title: "",
               headerRight: () => <DemoApiKeyMenu />,
+              headerShadowVisible: false,
               headerStyle: { backgroundColor: theme.pageBackground },
-              headerTintColor: theme.text,
+              headerTintColor: theme.accent,
               contentStyle: { backgroundColor: theme.pageBackground },
               headerBackButtonDisplayMode: "minimal",
             }}
@@ -77,22 +47,22 @@ export default function App() {
             <Stack.Screen
               name="Home"
               component={HomeScreen}
+              // The home screen draws its own flat top row: iOS's navigation bar
+              // would put the badge and the key button into glass buttons.
               options={{ headerShown: false }}
             />
-            {allDemoItems.map((item) => {
-              const Screen = DEMO_SCREENS[item.route];
-              return (
+            {demoSections.flatMap((section) =>
+              section.demos.map((demo) => (
                 <Stack.Screen
-                  key={item.route}
-                  name={item.route}
-                  options={{ title: item.title }}
-                >
-                  {() => <Screen />}
-                </Stack.Screen>
-              );
-            })}
+                  key={demo.route}
+                  name={demo.route}
+                  component={demo.screen}
+                />
+              )),
+            )}
           </Stack.Navigator>
         </NavigationContainer>
+        <DemoEventPickerModal />
       </DemoSessionProvider>
     </SafeAreaProvider>
   );

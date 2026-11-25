@@ -1,11 +1,11 @@
 [versions]
 
-agp = "9.2.1"
-kotlin = "2.3.10"
-lifecycleRuntimeKtx = "2.10.0"
+agp = "9.3.1"
+kotlin = "2.4.10"
+lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
-composeBom = "2026.05.00"
-navigationCompose = "2.9.0"
+composeBom = "2026.06.01"
+navigationCompose = "2.9.8"
 
 [libraries]
 
@@ -21,4 +21,5 @@ material-icons-core = { module = "androidx.compose.material:material-icons-core"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

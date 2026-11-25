@@ -15,6 +15,7 @@ const projectRoot = __dirname;
  */
 const watchFolders = [];
 const resolverConfig = {};
+const serverConfig = {};
 try {
   const linked = fs.realpathSync(path.join(projectRoot, 'node_modules', 'livevoice-sdk-react-native'));
   if (!linked.startsWith(projectRoot)) {
@@ -45,6 +46,23 @@ try {
       }
       return context.resolveRequest(context, moduleName, platform);
     };
+
+    // The wrapper's images. A Debug app loads each image from this server, at an address made
+    // from the file's path relative to the project: '/assets/../../livevoice-sdk-react-native/…'
+    // for the linked checkout. Metro refuses that address. Android resolves the '..' segments
+    // before sending, so its request arrives as '/livevoice-sdk-react-native/…'; iOS sends the
+    // address as it is. Hand both forms to Metro's asset endpoint with the real relative path.
+    const relative = path.relative(projectRoot, linked).split(path.sep).join('/');
+    const prefixes = ['/assets/' + relative + '/', '/' + relative.replace(/^(\.\.\/)+/, '') + '/'];
+    serverConfig.enhanceMiddleware = middleware => (req, res, next) => {
+      const prefix = prefixes.find(candidate => req.url.startsWith(candidate));
+      if (prefix != null) {
+        const [pathname, query] = req.url.split('?');
+        const file = relative + '/' + pathname.slice(prefix.length);
+        req.url = '/assets/?unstable_path=' + encodeURIComponent(file) + (query ? '&' + query : '');
+      }
+      return middleware(req, res, next);
+    };
   }
 } catch {
   // Not installed / not linked — nothing to add.
@@ -54,6 +72,7 @@ try {
 const config = {
   watchFolders,
   resolver: resolverConfig,
+  server: serverConfig,
 };
 
 module.exports = mergeConfig(getDefaultConfig(projectRoot), config);

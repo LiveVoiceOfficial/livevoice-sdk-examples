@@ -1,0 +1,15 @@
+{
+  "originHash" : "3629b871b3eee4f8d7deb59681af016ce2decd903a5a18c023385001f5b909b7",
+  "pins" : [
+    {
+      "identity" : "livevoice-sdk-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/LiveVoiceOfficial/livevoice-sdk-swift.git",
+      "state" : {
+        "revision" : "48847d47564000ab4b04f58f386ceceae182a5fc",
+        "version" : "3.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

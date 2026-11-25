@@ -1,6 +1,3 @@
-lv_dev = File.expand_path('~/.cocoapods/livevoice-dev.rb')
-eval(File.read(lv_dev), binding) if File.exist?(lv_dev)
-
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(

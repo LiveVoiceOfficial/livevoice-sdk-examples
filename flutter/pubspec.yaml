@@ -1,7 +1,7 @@
 name: livevoice_sdk_example
 description: Example Flutter application for the LiveVoice SDK.
 publish_to: 'none'
-version: 1.0.0+1
+version: 3.0.0+1
 
 environment:
   sdk: ^3.12.0
@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  livevoice_sdk_flutter: ^2.0.0
+  livevoice_sdk_flutter: ^3.0.0
   shared_preferences: ^2.2.0
 
 flutter:
@@ -18,3 +18,5 @@ flutter:
     # Resolution-aware variants (2.0x/3.0x) live alongside these entries.
     - assets/logo.png
     - assets/logo-dark.png
+    # The media controls' artwork on the Lock screen and audio sharing screen.
+    - assets/demo_artwork.png

@@ -31,69 +31,143 @@ struct ContentView: View {
                     .listRowSeparator(.hidden)
                 }
 
-                Section("Default UI") {
+                Section("Getting started") {
                     NavigationLink {
-                        DefaultParticipantInterfaceScreen()
+                        DefaultInterfaceScreen()
                     } label: {
                         DemoListRow(
-                            title: "Default participant interface",
-                            summary: "The simplest integration, with subtitles in your own view."
+                            title: "Default interface",
+                            summary: "The smallest integration: the event's channels, ready to play."
                         )
                     }
 
                     NavigationLink {
-                        FilteredChannelListScreen()
+                        JoiningEventScreen()
                     } label: {
                         DemoListRow(
-                            title: "Filtered channel list",
-                            summary: "Show only the channels you want — by property, an empty result, or a source channel with its AI subtitles."
-                        )
-                    }
-
-                    NavigationLink {
-                        AudioOutputPickerScreen()
-                    } label: {
-                        DemoListRow(
-                            title: "Audio output picker",
-                            summary: "Place the audio output picker wherever it fits in your app."
-                        )
-                    }
-
-                    NavigationLink {
-                        SubtitleOnlyScreen()
-                    } label: {
-                        DemoListRow(
-                            title: "Subtitle only",
-                            summary: "Show subtitles without displaying any of the event channels."
+                            title: "Joining an event",
+                            summary: "Join, reconnect and leave, and follow the connection."
                         )
                     }
                 }
 
-                Section("Custom UI") {
+                Section("Channels") {
                     NavigationLink {
-                        BrandingAndEntitlementsScreen()
+                        FilteringChannelsScreen()
                     } label: {
                         DemoListRow(
-                            title: "Branding and entitlements",
-                            summary: "See how API key permissions affect branding and customization."
+                            title: "Filtering channels",
+                            summary: "Show only the channels you want."
                         )
                     }
 
                     NavigationLink {
-                        CustomChannelCellBasicScreen()
+                        CustomChannelCellScreen()
                     } label: {
                         DemoListRow(
                             title: "Custom channel cell",
-                            summary: "A richer custom channel row with status, translation, and subtitle badges."
+                            summary: "Draw each channel with your own view."
                         )
                     }
 
                     NavigationLink {
-                        LocalizationAndAccessibilityScreen()
+                        CustomViewStatesScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Custom view states",
+                            summary: "Your own loading, reconnecting, error and empty views."
+                        )
+                    }
+                }
+
+                Section("Subtitles") {
+                    NavigationLink {
+                        SubtitlesScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Subtitles",
+                            summary: "Show a channel's live subtitles in your own view."
+                        )
+                    }
+                }
+
+                Section("Audio and system") {
+                    NavigationLink {
+                        AudioOutputScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Audio output",
+                            summary: "Prefer the loudspeaker, or let the system choose."
+                        )
+                    }
+
+                    NavigationLink {
+                        LockScreenScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Lock screen and audio sharing",
+                            summary: "Share the audio with other apps, and show the channel on the Lock Screen."
+                        )
+                    }
+                }
+
+                Section("Event features") {
+                    NavigationLink {
+                        PasswordsScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Password-protected channels",
+                            summary: "Ask for channel passwords with your own UI, and keep them.",
+                            needsOwnEvent: true
+                        )
+                    }
+
+                    NavigationLink {
+                        LanguageRequestsScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Language requests",
+                            summary: "Ask the event for a language it doesn't offer yet.",
+                            needsOwnEvent: true
+                        )
+                    }
+
+                    NavigationLink {
+                        LinkedEventsScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Linked events",
+                            summary: "Switch to an event linked to this one.",
+                            needsOwnEvent: true
+                        )
+                    }
+                }
+
+                Section("Customization and diagnostics") {
+                    NavigationLink {
+                        BrandingScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Branding and entitlements",
+                            summary: "See what the joined event's API key permits."
+                        )
+                    }
+
+                    NavigationLink {
+                        LocalizationScreen()
                     } label: {
                         DemoListRow(
                             title: "Localization and accessibility",
-                            summary: "The strings and labels needed for a polished custom integration."
+                            summary: "The SDK's own texts, in the app's language, for your custom parts."
+                        )
+                    }
+
+                    NavigationLink {
+                        DiagnosticsScreen()
+                    } label: {
+                        DemoListRow(
+                            title: "Diagnostics log",
+                            summary: "Read what the SDK did, and why a call failed."
                         )
                     }
                 }
